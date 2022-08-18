@@ -9,9 +9,7 @@ import java.util.logging.Logger;
 public class ContactService {
     private final Logger log = Logger.getLogger(ContactService.class.toString());
 
-    public boolean saveMessageDetails(Contact contact){
-        boolean isSaved = true;
+    public void saveMessageDetails(Contact contact){
         log.info(contact.toString());
-        return isSaved;
     }
 }
