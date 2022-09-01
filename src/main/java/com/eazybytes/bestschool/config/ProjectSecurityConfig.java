@@ -1,17 +1,30 @@
 package com.eazybytes.bestschool.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+public class ProjectSecurityConfig {
 
-        http.authorizeRequests()
+    /**
+     * From Spring Security 5.7, the WebSecurityConfigurerAdapter is deprecated to encourage users
+     * to move towards a component-based security configuration. It is recommended to create a bean
+     * of type SecurityFilterChain for security related configurations.
+     *
+     * @param http
+     * @return SecurityFilterChain
+     * @throws Exception
+     */
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf().disable()
+                .authorizeRequests()
                 .mvcMatchers("/dashboard").authenticated()
                 .mvcMatchers("/home").permitAll()
                 .mvcMatchers("/holidays/**").permitAll()
@@ -21,17 +34,26 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/about").permitAll()
                 .mvcMatchers("/login").permitAll()
                 .and().formLogin().loginPage("/login")
-                .defaultSuccessUrl("/dashboard")
-                .failureUrl("/login?error=true").permitAll()
+                .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll()
                 .and().logout().logoutSuccessUrl("/login?logout=true").invalidateHttpSession(true).permitAll()
                 .and().httpBasic();
+
+        return http.build();
     }
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().
-                withUser("ansh").password("ansh").roles("USER")
-                .and()
-                .withUser("admin").password("admin").roles("USER", "ADMIN")
-                .and().passwordEncoder(NoOpPasswordEncoder.getInstance());
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+
+        UserDetails admin = User.withDefaultPasswordEncoder()
+                .username("ansh")
+                .password("ansh")
+                .roles("USER")
+                .build();
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username("admin")
+                .password("admin")
+                .roles("USER", "ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 }
