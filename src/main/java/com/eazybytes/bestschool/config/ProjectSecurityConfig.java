@@ -24,9 +24,13 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf().ignoringAntMatchers("/saveMsg")
+                .ignoringAntMatchers("/h2-console/**")
                 .and().authorizeRequests()
                 .mvcMatchers("/dashboard").authenticated()
                 .mvcMatchers("/home").permitAll()
+
+                //h2-console
+                .mvcMatchers("/h2-console/**").permitAll()
                 .mvcMatchers("/holidays/**").permitAll()
                 .mvcMatchers("/contact").permitAll()
                 .mvcMatchers("/saveMsg").permitAll()
@@ -37,6 +41,8 @@ public class ProjectSecurityConfig {
                 .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll()
                 .and().logout().logoutSuccessUrl("/login?logout=true").invalidateHttpSession(true).permitAll()
                 .and().httpBasic();
+
+        http.headers().frameOptions().disable();
 
         return http.build();
     }
