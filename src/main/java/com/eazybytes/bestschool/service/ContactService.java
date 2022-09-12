@@ -36,8 +36,7 @@ public class ContactService {
     }
 
     public List <Contact> findMsgsWithOpenStatus() {
-        List <Contact> contactMsgs = contactRepository.findMsgsWithStatus(BestSchoolConstants.OPEN);
-        return contactMsgs;
+        return contactRepository.findMsgsWithStatus(BestSchoolConstants.OPEN);
     }
 
     public boolean updateMsgStatus(int contactId, String updatedBy) {

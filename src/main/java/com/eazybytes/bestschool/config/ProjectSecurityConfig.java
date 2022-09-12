@@ -27,6 +27,7 @@ public class ProjectSecurityConfig {
                 .ignoringAntMatchers("/h2-console/**")
                 .and().authorizeRequests()
                 .mvcMatchers("/dashboard").authenticated()
+                .mvcMatchers("/displayMessages").hasRole("ADMIN")
                 .mvcMatchers("/home").permitAll()
 
                 //h2-console
@@ -58,7 +59,7 @@ public class ProjectSecurityConfig {
         UserDetails user = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("admin")
-                .roles("USER", "ADMIN")
+                .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
     }
